@@ -8,28 +8,28 @@ namespace SiAOD_LR5
 {
     public class Selection
     {
-        public List<int[]> GetA(int[,] matrix)
-        {
-            List<int[]> A = new List<int[]>();
-            for (int i = 0; i < matrix.GetLength(0); i++)
-            {
-                for (int j = 0; j < matrix.GetLength(0); j++)
-                {
-                    if (i != j)
-                    {
-                        int Pi = P(i, matrix);
-                        int Pj = P(j, matrix);
-                        int K = Pi + Pj - 2 * R(i, j, matrix);
-                        if (K < Pi && K < Pj)
-                        {
-                            int[] H = new int[2] { i, j };
-                            A.Add(H);
-                        }
-                    }
-                }
-            }
-            return GetRefactorA(2, A);
-        }
+        //public List<int[]> GetA(int[,] matrix)
+        //{
+        //    List<int[]> A = new List<int[]>();
+        //    for (int i = 0; i < matrix.GetLength(0); i++)
+        //    {
+        //        for (int j = 0; j < matrix.GetLength(0); j++)
+        //        {
+        //            if (i != j)
+        //            {
+        //                int Pi = P(i, matrix);
+        //                int Pj = P(j, matrix);
+        //                int K = Pi + Pj - 2 * R(i, j, matrix);
+        //                if (K < Pi && K < Pj)
+        //                {
+        //                    int[] H = new int[2] { i, j };
+        //                    A.Add(H);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return GetRefactorA(2, A);
+        //}
 
         public List<int[]> GetA(int[,] matrix, int n, List<int[]> A, int[] arrayIndex = null)
         {
@@ -39,11 +39,10 @@ namespace SiAOD_LR5
                 arrayIndex = SetArrayIndex(i, n, arrayIndex);
                 if (n != 1)
                     A = GetA(matrix, n - 1, A, arrayIndex);
-                if (IsUniqueIndex(arrayIndex))
-                    if (IsL(matrix, arrayIndex))
-                        A.Add(CopyArray(arrayIndex));
+                if (IsUniqueIndex(arrayIndex) && IsL(matrix, arrayIndex))
+                    A.Add(CopyArray(arrayIndex));
             }
-            return GetRefactorA(n, A);
+            return A;
         }
 
         public int[,] GetFactorized(int[,] matrix, List<int[]> A)
@@ -72,7 +71,7 @@ namespace SiAOD_LR5
             return outMatrix;
         }
 
-        private List<int[]> GetRefactorA(int n, List<int[]> A)
+        public List<int[]> GetRefactorA(int n, List<int[]> A)
         {
             List<int[]> outA = new List<int[]>();
             int count = Factorial(n);
@@ -171,6 +170,8 @@ namespace SiAOD_LR5
             for (int i = 0; i < array.Length; i++)
                 if (L >= P(array[i], matrix))
                     result = false;
+            if (result)
+                result = result;
             return result;
         }
 

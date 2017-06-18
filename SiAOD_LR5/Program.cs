@@ -28,7 +28,7 @@ namespace SiAOD_LR5
             Selection select = new Selection();
             do
             {
-                A = select.GetA(matrix);
+                A = select.GetRefactorA(2, select.GetA(matrix, 2, A));
                 if (A.Count != 0)
                 {
                     matrix = select.GetFactorized(matrix, A);
@@ -38,7 +38,7 @@ namespace SiAOD_LR5
             while (A.Count != 0);
             do
             {
-                A = select.GetA(matrix, 3, A);
+                A = select.GetRefactorA(3, select.GetA(matrix, 3, A));
                 if (A.Count != 0)
                 {
                     matrix = select.GetFactorized(matrix, A);
