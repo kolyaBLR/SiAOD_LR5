@@ -36,7 +36,17 @@ namespace SiAOD_LR5
                 }
             }
             while (A.Count != 0);
-            A = select.GetA(matrix, 3, A);
+            do
+            {
+                A = select.GetA(matrix, 3, A);
+                if (A.Count != 0)
+                {
+                    matrix = select.GetFactorized(matrix, A);
+                    Print(matrix, A);
+                }
+            }
+            while (A.Count != 0);
+            
             Console.ReadKey();
         }
 

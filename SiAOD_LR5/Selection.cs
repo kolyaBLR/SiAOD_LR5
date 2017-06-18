@@ -24,12 +24,11 @@ namespace SiAOD_LR5
                         {
                             int[] H = new int[2] { i, j };
                             A.Add(H);
-                            matrix[j, i] = 0;   // зануление
                         }
                     }
                 }
             }
-            return A;
+            return GetRefactorA(2, A);
         }
 
         public List<int[]> GetA(int[,] matrix, int n, List<int[]> A, int[] arrayIndex = null)
@@ -41,12 +40,10 @@ namespace SiAOD_LR5
                 if (n != 1)
                     A = GetA(matrix, n - 1, A, arrayIndex);
                 if (IsUniqueIndex(arrayIndex))
-                {
                     if (IsL(matrix, arrayIndex))
-                        A.Add(arrayIndex);
-                }
+                        A.Add(CopyArray(arrayIndex));
             }
-            return A;
+            return GetRefactorA(n, A);
         }
 
         public int[,] GetFactorized(int[,] matrix, List<int[]> A)
@@ -73,6 +70,41 @@ namespace SiAOD_LR5
                 indexSpan++;
             }
             return outMatrix;
+        }
+
+        private List<int[]> GetRefactorA(int n, List<int[]> A)
+        {
+            List<int[]> outA = new List<int[]>();
+            int count = Factorial(n);
+            for (int i = 0; i < A.Count; i += count)
+                outA.Add(A[i]);
+            return outA;
+        }
+
+        private int Factorial(int n)
+        {
+            int result = 1;
+            while (n != 0)
+                result *= n--;
+            return result;
+        }
+
+        //private int[,] Nullification(int[,] matrix, int[] array)
+        //{
+        //    int[] copyArray = CopyArray(array);
+        //    Array.Reverse(copyArray);
+        //    for (int i = 0; i < copyArray.Length; i++)
+        //        for (int j = i + 1; j < copyArray.Length; j++)
+        //            matrix[copyArray[i], copyArray[j]] = 0;
+        //    return matrix;
+        //}
+
+        private int[] CopyArray(int[] arrayIndex)
+        {
+            int[] outArray = new int[arrayIndex.Length];
+            for (int i = 0; i < arrayIndex.Length; i++)
+                outArray[i] = arrayIndex[i];
+            return outArray;
         }
 
         private int[] SetArrayIndex(int i, int n, int[] array)
