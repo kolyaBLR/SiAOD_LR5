@@ -8,7 +8,7 @@ namespace SiAOD_LR5
 {
     public class Selection
     {
-        public List<int[]> GetA(int[,] matrix, int n)
+        public List<int[]> GetA(int[,] matrix)
         {
             List<int[]> A = new List<int[]>();
             for (int i = 0; i < matrix.GetLength(0); i++)
@@ -37,11 +37,13 @@ namespace SiAOD_LR5
             arrayIndex = arrayIndex ?? (new int[n]);
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
-                if (IsUniqueIndex(arrayIndex) && n == 1)
+                arrayIndex = SetArrayIndex(i, n, arrayIndex);
+                if (n != 1)
+                    A = GetA(matrix, n - 1, A, arrayIndex);
+                if (IsUniqueIndex(arrayIndex))
                 {
                     if (IsL(matrix, arrayIndex))
                         A.Add(arrayIndex);
-                    A = GetA(matrix, n - 1, A, arrayIndex);
                 }
             }
             return A;
@@ -71,6 +73,12 @@ namespace SiAOD_LR5
                 indexSpan++;
             }
             return outMatrix;
+        }
+
+        private int[] SetArrayIndex(int i, int n, int[] array)
+        {
+            array[array.Length - n] = i;
+            return array;
         }
 
         private bool IsUniqueIndex(int[] indexArray)
@@ -119,17 +127,17 @@ namespace SiAOD_LR5
             return isA;
         }
 
-        private bool IsL(int[,] matrix, int[] arrayIndex)
+        private bool IsL(int[,] matrix, int[] array)
         {
             int L = 0;
-            for (int i = 0; i < arrayIndex.Length; i++)
-                L += P(arrayIndex[i], matrix);
-            for (int i = 0; i < arrayIndex.Length; i++)
-                for (int j = i; j < arrayIndex.Length; j++)
-                    L -= R(i, j, matrix);
+            for (int i = 0; i < array.Length; i++)
+                L += P(array[i], matrix);
+            for (int i = 0; i < array.Length; i++)
+                for (int j = i; j < array.Length; j++)
+                    L -= 2 * R(array[i], array[j], matrix);
             bool result = true;
-            for (int i = 0; i < arrayIndex.Length; i++)
-                if (L >= P(arrayIndex[i], matrix))
+            for (int i = 0; i < array.Length; i++)
+                if (L >= P(array[i], matrix))
                     result = false;
             return result;
         }

@@ -28,7 +28,7 @@ namespace SiAOD_LR5
             Selection select = new Selection();
             do
             {
-                A = select.GetA(matrix, 3);
+                A = select.GetA(matrix);
                 if (A.Count != 0)
                 {
                     matrix = select.GetFactorized(matrix, A);
@@ -36,6 +36,7 @@ namespace SiAOD_LR5
                 }
             }
             while (A.Count != 0);
+            A = select.GetA(matrix, 3, A);
             Console.ReadKey();
         }
 
