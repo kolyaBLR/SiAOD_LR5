@@ -26,42 +26,37 @@ namespace SiAOD_LR5
                     { 0,0,0,0,0,0,1,2,0 }
                 };
             Selection select = new Selection();
-            do
+            for (int i = 2; i < 4; i++)
             {
-                A = select.GetRefactorA(2, select.GetA(matrix, 2, A));
-                if (A.Count != 0)
+                do
                 {
-                    matrix = select.GetFactorized(matrix, A);
-                    Print(matrix, A);
+                    A.Clear();
+                    A = select.GetRefactorA(i, select.GetA(matrix, i, A, null));
+                    if (A.Count != 0)
+                    {
+                        matrix = select.GetFactorized(matrix, A);
+                        Print(matrix, A);
+                    }
                 }
+                while (A.Count != 0);
             }
-            while (A.Count != 0);
-            do
-            {
-                A = select.GetRefactorA(3, select.GetA(matrix, 3, A));
-                if (A.Count != 0)
-                {
-                    matrix = select.GetFactorized(matrix, A);
-                    Print(matrix, A);
-                }
-            }
-            while (A.Count != 0);
             
             Console.ReadKey();
         }
 
         public static void Print(int[,] matrix, List<int[]> A)
         {
+            Console.Write("A: ");
+            int k = 0;
+            foreach (var item in A)
+                Console.Write("H{0}({1} {2}) ", k++, item[0], item[1]);
+            Console.WriteLine();
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 for (int j = 0; j < matrix.GetLength(0); j++)
                     Console.Write("{0} ", matrix[i, j]);
                 Console.WriteLine();
             }
-            Console.Write("A: ");
-            int k = 0;
-            foreach (var item in A)
-                Console.Write("H{0}({1} {2}) ", k++, item[0], item[1]);
             Console.Write("\n\n");
         }
     }

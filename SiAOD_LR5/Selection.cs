@@ -8,30 +8,7 @@ namespace SiAOD_LR5
 {
     public class Selection
     {
-        //public List<int[]> GetA(int[,] matrix)
-        //{
-        //    List<int[]> A = new List<int[]>();
-        //    for (int i = 0; i < matrix.GetLength(0); i++)
-        //    {
-        //        for (int j = 0; j < matrix.GetLength(0); j++)
-        //        {
-        //            if (i != j)
-        //            {
-        //                int Pi = P(i, matrix);
-        //                int Pj = P(j, matrix);
-        //                int K = Pi + Pj - 2 * R(i, j, matrix);
-        //                if (K < Pi && K < Pj)
-        //                {
-        //                    int[] H = new int[2] { i, j };
-        //                    A.Add(H);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return GetRefactorA(2, A);
-        //}
-
-        public List<int[]> GetA(int[,] matrix, int n, List<int[]> A, int[] arrayIndex = null)
+        public List<int[]> GetA(int[,] matrix, int n, List<int[]> A, int[] arrayIndex)
         {
             arrayIndex = arrayIndex ?? (new int[n]);
             for (int i = 0; i < matrix.GetLength(0); i++)
@@ -39,7 +16,7 @@ namespace SiAOD_LR5
                 arrayIndex = SetArrayIndex(i, n, arrayIndex);
                 if (n != 1)
                     A = GetA(matrix, n - 1, A, arrayIndex);
-                if (IsUniqueIndex(arrayIndex) && IsL(matrix, arrayIndex))
+                if (n == 1 && IsUniqueIndex(arrayIndex) && IsL(matrix, arrayIndex) && UniqueArray(A, arrayIndex))
                     A.Add(CopyArray(arrayIndex));
             }
             return A;
@@ -47,13 +24,16 @@ namespace SiAOD_LR5
 
         public int[,] GetFactorized(int[,] matrix, List<int[]> A)
         {
-            int n = matrix.GetLength(0) - A.Count, l = 0;
+            int n = matrix.GetLength(0) - (A.Count * (A[0].Length - 1)), l = 0;
             int[,] outMatrix = new int[n, n];
             int[] arrayLine = new int[n];
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 if (IsA(i, A))
-                    arrayLine = GetFactorizedLine(i++, n, matrix, A);
+                {
+                    arrayLine = GetFactorizedLine(i, n, matrix, A);
+                    i += A[0].Length - 1 + i;
+                }
                 else
                     arrayLine = GetOldLine(i, n, matrix, A);
                 for (int j = 0; j < n; j++)
@@ -88,16 +68,6 @@ namespace SiAOD_LR5
             return result;
         }
 
-        //private int[,] Nullification(int[,] matrix, int[] array)
-        //{
-        //    int[] copyArray = CopyArray(array);
-        //    Array.Reverse(copyArray);
-        //    for (int i = 0; i < copyArray.Length; i++)
-        //        for (int j = i + 1; j < copyArray.Length; j++)
-        //            matrix[copyArray[i], copyArray[j]] = 0;
-        //    return matrix;
-        //}
-
         private int[] CopyArray(int[] arrayIndex)
         {
             int[] outArray = new int[arrayIndex.Length];
@@ -112,6 +82,55 @@ namespace SiAOD_LR5
             return array;
         }
 
+        private int[] GetFactorizedLine(int i, int n, int[,] matrix, List<int[]> A)
+        {
+            int[] outArray = new int[n];
+            int k = 0;
+            for (int j = 0; j < matrix.GetLength(0); j++)
+            {
+                outArray[k++] = IsA(i, A) && IsA(j, A) ? 0 : GetFactorizedElement(i, j, matrix, A);
+                j = IsA(j, A) ? A[0].Length - 1 + j : j;
+            }
+            return outArray;
+        }
+
+        private int[] GetOldLine(int i, int n, int[,] matrix, List<int[]> A)
+        {
+            int[] outArray = new int[n];
+            int k = 0;
+            for (int j = 0; j < matrix.GetLength(0); j++)
+            {
+                outArray[k++] = IsA(j, A) ? 0 : matrix[i, j];
+                j = IsA(j, A) ? A[0].Length - 1 + j : j;
+            }
+            return outArray;
+        }
+
+        private int GetFactorizedElement(int i, int j, int[,] matrix, List<int[]> A)
+        {
+            int size = A[0].Length, result = 0;
+            for (int k = i; k < size + i; k++)
+                result += matrix[k, j];
+            return result;
+        }
+
+        private bool UniqueArray(List<int[]> A, int[] array)
+        {
+            bool result = true;
+            int[] copyArray = CopyArray(array);
+            Array.Sort(copyArray);
+            foreach (var item in A)
+            {
+                int[] copyArrayA = CopyArray(item);
+                Array.Sort(copyArrayA);
+                for (int i = 0; i < copyArray.Length; i++)
+                    for (int j = 0; j < copyArrayA.Length; j++)
+                        if (i != j && copyArray[i] == copyArrayA[j])
+                            result = false;
+            }
+            return result;
+        }
+
         private bool IsUniqueIndex(int[] indexArray)
         {
             bool result = true;
@@ -120,33 +139,6 @@ namespace SiAOD_LR5
                     if (indexArray[i] == indexArray[j])
                         result = false;
             return result;
-        }
-
-        private int[] GetFactorizedLine(int i, int n, int[,] matrix, List<int[]> A)
-        {
-            int[] outArray = new int[n];
-            int k = IsA(i, A) ? 0 : 1;
-            for (int j = 0; j < matrix.GetLength(0); j++)
-            {
-                outArray[k++] = IsA(j, A) ? 0 : matrix[i, j] + matrix[i + 1, j];
-                j = IsA(j, A) ? ++j : j;
-            }
-            return outArray;
-        }
-
-        private int[] GetOldLine(int i, int n, int[,] matrix, List<int[]> A)
-        {
-            int[] outArray = new int[n];
-            int k = 1;
-            for (int j = 2; j < matrix.GetLength(0); j++)
-            {
-                if (!IsA(j, A))
-                {
-                    outArray[k++] = IsA(j, A) ? 0 : matrix[i, j];
-                    j = IsA(j, A) ? ++j : j;
-                }
-            }
-            return outArray;
         }
 
         private bool IsA(int i, List<int[]> A)
@@ -170,8 +162,6 @@ namespace SiAOD_LR5
             for (int i = 0; i < array.Length; i++)
                 if (L >= P(array[i], matrix))
                     result = false;
-            if (result)
-                result = result;
             return result;
         }
 
