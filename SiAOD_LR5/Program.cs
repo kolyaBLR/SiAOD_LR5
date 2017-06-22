@@ -26,7 +26,7 @@ namespace SiAOD_LR5
                     { 0,0,0,0,0,0,1,2,0 }
                 };
             Selection select = new Selection();
-            for (int i = 2; i < 4; i++)
+            for (int i = 2; i < 10; i++)
             {
                 do
                 {
@@ -40,24 +40,28 @@ namespace SiAOD_LR5
                 }
                 while (A.Count != 0);
             }
-            
             Console.ReadKey();
         }
 
         public static void Print(int[,] matrix, List<int[]> A)
         {
-            Console.Write("A: ");
+            Console.Write("A:");
             int k = 0;
             foreach (var item in A)
-                Console.Write("H{0}({1} {2}) ", k++, item[0], item[1]);
-            Console.WriteLine();
+            {
+                Console.Write("\nH{0} ( ", k++);
+                for (int i = 0; i < item.Length; i++)
+                    Console.Write("{0} ", item[i]);
+                Console.Write(")");
+            }
+            Console.Write("\n");
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 for (int j = 0; j < matrix.GetLength(0); j++)
                     Console.Write("{0} ", matrix[i, j]);
                 Console.WriteLine();
             }
-            Console.Write("\n\n");
+            Console.Write("\n");
         }
     }
 }
